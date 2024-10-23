@@ -2,17 +2,19 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBR7nwiWE4ZU8epXbF51Bz9ch3wdbo_TcE",
-  authDomain: "graficosjinieth.firebaseapp.com",
-  projectId: "graficosjinieth",
-  storageBucket: "graficosjinieth.appspot.com",
-  messagingSenderId: "117126306877",
-  appId: "1:117126306877:web:3d0a86fb6aa5bc1bd29e54"
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_AUTH_DOMAIN",
+  projectId: "TU_PROJECT_ID",
+  storageBucket: "TU_STORAGE_BUCKET",
+  messagingSenderId: "TU_MESSAGING_SENDER_ID",
+  appId: "TU_APP_ID",
 };
 
-
+// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 
+// Inicializar Firestore
 const db = getFirestore(app);
 
 export default db;
+

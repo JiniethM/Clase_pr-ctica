@@ -1,13 +1,19 @@
+import React from 'react';
+import { StyleSheet, View, Dimensions, Text } from 'react-native';
 import { LineChart } from "react-native-chart-kit";
-import { Dimensions, View, StyleSheet } from 'react-native';
 
-const screenWidth = Dimensions.get("window").width;
+export default function GraficoBezier({ dataSalarios }) {
+  const screenWidth = Dimensions.get("window").width;
 
-export default function GraficoLinea({ data, title }) {
+  // Verifica si 'dataSalarios' tiene la estructura correcta
+  if (!dataSalarios || !dataSalarios.labels || !dataSalarios.datasets) {
+    return <Text>No hay datos disponibles para mostrar</Text>;
+  }
+
   return (
     <View style={styles.container}>
       <LineChart
-        data={data}
+        data={dataSalarios}
         width={screenWidth - (screenWidth * 0.1)}
         height={300}
         chartConfig={{
@@ -19,8 +25,10 @@ export default function GraficoLinea({ data, title }) {
           strokeWidth: 1,
           barPercentage: 0.5,
         }}
-        bezier={true}
-        style={{ borderRadius: 10 }}
+        style={{
+          borderRadius: 10
+        }}
+        bezier
       />
     </View>
   );

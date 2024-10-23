@@ -1,38 +1,36 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { collection, addDoc } from "firebase/firestore";
 import db from '../../database/firebaseconfig';
-import { collection, addDoc } from "firebase/firestore"; 
 
-export default function Formulario({setBandera}) {
+export default function Formulario({ setBandera }) {
   const [nombre, setNombre] = useState('');
   const [edad, setEdad] = useState('');
   const [genero, setGenero] = useState('Masculino');
   const [salario, setSalario] = useState('');
 
   const limpiarCampos = () => {
-    setNombre("");
-    setEdad("");
-    setGenero("Masculino");
-    setSalario("");
+    setNombre('');
+    setEdad('');
+    setGenero('Masculino');
+    setSalario('');
   }
 
   const guardarDatos = async () => {
     try {
-      const docRef = await addDoc(collection(db, "personas"), {
+      await addDoc(collection(db, "personas"), {
         nombre: nombre,
         edad: edad,
         genero: genero,
         salario: salario
       });
-      console.log("Documento agregado con ID: ", docRef.id);
     } catch (e) {
       console.error("Error al agregar el documento: ", e);
     }
   }
 
   const handleSubmit = () => {
-    console.log(`Nombre: ${nombre}, Edad: ${edad}, Género: ${genero}, Salario: ${salario}`);
     guardarDatos();
     limpiarCampos();
     setBandera(prev => !prev);
