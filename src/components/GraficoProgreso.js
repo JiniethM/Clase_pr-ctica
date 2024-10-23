@@ -1,28 +1,29 @@
+import React from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import { ProgressChart } from 'react-native-chart-kit';
 
 export default function GraficoProgreso({ dataProgreso, colors }) {
-  let screenWidth = Dimensions.get('window').width;
+  const screenWidth = Dimensions.get("window").width;
 
   return (
     <View style={styles.container}>
-      <ProgressChart
-        data={dataProgreso}
-        width={screenWidth - screenWidth * 0.1}
-        height={300}
-        chartConfig={{
-          backgroundColor: '#022173',
-          backgroundGradientFrom: '#022173',
-          backgroundGradientTo: '#1b3fa0',
-          color: (opacity = 1, index) => colors[index] || `rgba(255, 255, 255, ${opacity})`,
-        }}
-        style={{
-          borderRadius: 10,
-        }}
-        hideLegend={false}
-        strokeWidth={10}
-        radius={32}
-      />
+      {dataProgreso && (  // Verifica que `dataProgreso` esté presente antes de renderizar el gráfico
+        <ProgressChart
+          data={dataProgreso}
+          width={screenWidth - 40}  // Ajusta el ancho a la pantalla
+          height={220}              // Ajusta el alto del gráfico
+          strokeWidth={16}          // Grosor del gráfico
+          radius={32}               // Ajusta el radio de los círculos
+          chartConfig={{
+            backgroundColor: '#1c313a',
+            backgroundGradientFrom: '#1c313a',
+            backgroundGradientTo: '#0d47a1',
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          }}
+          hideLegend={false}         // Mostrar o no la leyenda
+        />
+      )}
     </View>
   );
 }

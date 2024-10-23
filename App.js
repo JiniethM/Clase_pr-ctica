@@ -1,112 +1,103 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, Text } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import GraficoSalarios from './src/components/GraficoSalarios';
 import GraficoGeneros from './src/components/GraficoGenero';
 import Formulario from './src/components/Formulario';
 import GraficoReporteEnfermedades from './src/components/GraficoReporteEnfermedades';
+import GraficoProgreso from './src/components/GraficoProgreso';
 import GraficoBezier from './src/components/GraficoBezier';
-import GraficoProgreso from './src/components/GraficoProgreso'; // Importa tu componente
 import { collection, getDocs, query } from 'firebase/firestore';
-import db from './database/firebaseconfig';
+import db from './database/firebaseconfig'; // Asegúrate de que la ruta sea correcta
 
 export default function App() {
   const [bandera, setBandera] = useState(false);
-  const [dataSalarios, setDataSalarios] = useState(null);
-  const [dataGeneros, setDataGeneros] = useState(null);
-  const [dataProgreso, setDataProgreso] = useState({
+  const [dataSalarios, setDataSalarios] = useState({
     labels: [''],
-    data: [0],
+    datasets: [{ data: [0] }]
   });
+  const [dataProgreso, setDataProgreso] = useState({
+    labels: ['Hombres', 'Mujeres'],
+    data: [0, 0]
+  });
+  const [dataGeneros, setDataGeneros] = useState([]);
 
   const dataReporteEnfermedades = [
-    { date: '2017-01-05', count: 8 },
-    { date: '2017-01-19', count: 5 },
-    // Otros datos...
+    { date: "2017-01-05", count: 8 },
+    { date: "2017-01-19", count: 5 },
+    // ... otros datos
   ];
 
+  // Carga de datos de salarios
   useEffect(() => {
     const recibirDatosSalarios = async () => {
       try {
-        const q = query(collection(db, 'personas'));
+        const q = query(collection(db, "personas"));
         const querySnapshot = await getDocs(q);
         const nombres = [];
         const salarios = [];
 
         querySnapshot.forEach((doc) => {
           const datosBD = doc.data();
-          const { nombre, salario } = datosBD;
-          nombres.push(nombre);
-          salarios.push(salario);
+          nombres.push(datosBD.nombre);
+          salarios.push(datosBD.salario);
         });
 
-        const validData = salarios.map((salario) => (typeof salario === 'number' ? salario : 0));
-
-        if (nombres.length > 0 && validData.length > 0) {
-          setDataSalarios({
-            labels: nombres,
-            datasets: [{ data: validData }],
-          });
-        } else {
-          setDataSalarios({ labels: ['Sin datos'], datasets: [{ data: [0] }] });
-        }
+        setDataSalarios({
+          labels: nombres,
+          datasets: [{ data: salarios }]
+        });
       } catch (error) {
-        console.error('Error al obtener documentos: ', error);
-        setDataSalarios({ labels: ['Error al cargar'], datasets: [{ data: [0] }] });
+        console.error("Error al obtener documentos: ", error);
       }
     };
 
     recibirDatosSalarios();
   }, [bandera]);
 
+  // Carga de datos de géneros
   useEffect(() => {
     const recibirDatosGeneros = async () => {
       try {
-        const q = query(collection(db, 'personas'));
+        const q = query(collection(db, "personas"));
         const querySnapshot = await getDocs(q);
         let masculino = 0;
         let femenino = 0;
 
         querySnapshot.forEach((doc) => {
           const datosBD = doc.data();
-          const { genero } = datosBD;
-          if (genero === 'Masculino') {
+          if (datosBD.genero === "Masculino") {
             masculino += 1;
-          } else if (genero === 'Femenino') {
+          } else if (datosBD.genero === "Femenino") {
             femenino += 1;
           }
         });
 
-        if (masculino > 0 || femenino > 0) {
-          const totalPersonas = masculino + femenino;
-          const progresos = [masculino / totalPersonas, femenino / totalPersonas];
+        const totalPersonas = masculino + femenino;
+        const progresos = [masculino / totalPersonas, femenino / totalPersonas];
 
-          setDataGeneros([
-            {
-              name: 'Masculino',
-              population: masculino,
-              color: 'rgba(131, 167, 234, 0.5)',
-              legendFontColor: '#7F7F7F',
-              legendFontSize: 12,
-            },
-            {
-              name: 'Femenino',
-              population: femenino,
-              color: 'rgba(255, 105, 180, 0.5)',
-              legendFontColor: '#7F7F7F',
-              legendFontSize: 12,
-            },
-          ]);
+        setDataProgreso({
+          labels: ['Hombres', 'Mujeres'],
+          data: progresos
+        });
 
-          setDataProgreso({
-            labels: ['Hombres', 'Mujeres'],
-            data: progresos,
-          });
-        } else {
-          setDataGeneros([{ name: 'Sin datos', population: 0, color: '#ccc', legendFontColor: '#7F7F7F', legendFontSize: 12 }]);
-        }
+        setDataGeneros([
+          {
+            name: "Masculino",
+            population: masculino,
+            color: "rgba(131, 167, 234, 0.5)",
+            legendFontColor: "#7F7F7F",
+            legendFontSize: 12
+          },
+          {
+            name: "Femenino",
+            population: femenino,
+            color: "rgba(255, 105, 180, 0.5)",
+            legendFontColor: "#7F7F7F",
+            legendFontSize: 12
+          }
+        ]);
       } catch (error) {
-        console.error('Error al obtener documentos: ', error);
-        setDataGeneros([{ name: 'Error al cargar', population: 0, color: '#ccc', legendFontColor: '#7F7F7F', legendFontSize: 12 }]);
+        console.error("Error al obtener documentos: ", error);
       }
     };
 
@@ -117,26 +108,11 @@ export default function App() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <Formulario setBandera={setBandera} />
-        {dataSalarios ? (
-          <>
-            <GraficoSalarios dataSalarios={dataSalarios} />
-            <GraficoBezier dataSalarios={dataSalarios} />
-          </>
-        ) : (
-          <Text>Cargando datos de salarios...</Text>
-        )}
-        {dataGeneros ? (
-          <>
-            <GraficoGeneros dataGeneros={dataGeneros} />
-            <GraficoProgreso
-              dataProgreso={dataProgreso}
-              colors={['rgba(131, 167, 234, 0.5)', 'rgba(255, 105, 180, 0.5)']}
-            />
-          </>
-        ) : (
-          <Text>Cargando datos de géneros...</Text>
-        )}
+        <GraficoSalarios dataSalarios={dataSalarios} />
+        <GraficoBezier dataSalarios={dataSalarios} />
+        <GraficoGeneros dataGeneros={dataGeneros} />
         <GraficoReporteEnfermedades dataReporteEnfermedades={dataReporteEnfermedades} />
+        <GraficoProgreso dataProgreso={dataProgreso} colors={['rgba(131, 167, 234, 0.5)', 'rgba(255, 105, 180, 0.5)']} />
       </ScrollView>
     </View>
   );

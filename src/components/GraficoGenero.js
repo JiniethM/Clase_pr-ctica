@@ -1,26 +1,26 @@
-import { LineChart } from "react-native-chart-kit";
-import { Dimensions, View, StyleSheet } from 'react-native';
+import React from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import { PieChart } from 'react-native-chart-kit';
 
-const screenWidth = Dimensions.get("window").width;
+export default function GraficoGeneros({ dataGeneros }) {
+  let screenWidth = Dimensions.get("window").width;
 
-export default function GraficoLinea({ data, title }) {
   return (
     <View style={styles.container}>
-      <LineChart
-        data={data}
+      <PieChart
+        data={dataGeneros}
         width={screenWidth - (screenWidth * 0.1)}
         height={300}
         chartConfig={{
-          backgroundGradientFrom: "#00FFFF",
-          backgroundGradientFromOpacity: 0.1,
-          backgroundGradientTo: "#FFFFFF",
-          backgroundGradientToOpacity: 1,
-          color: (opacity = 1) => `rgba(0, 123, 255, ${opacity})`,
-          strokeWidth: 1,
-          barPercentage: 0.5,
+          backgroundColor: '#022173',
+          backgroundGradientFrom: '#022173',
+          backgroundGradientTo: '#1b3fa0',
+          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
         }}
-        bezier={true}
-        style={{ borderRadius: 10 }}
+        accessor="population"
+        backgroundColor="transparent"
+        paddingLeft="15"
+        absolute
       />
     </View>
   );
